@@ -1,31 +1,31 @@
 pipeline {
   agent any
- 
+
   parameters {
     string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
     string(name: 'CONTAINER_NAME', defaultValue: 'univ-portal-app', description: 'Docker container name')
     string(name: 'HOST_PORT', defaultValue: '3001', description: 'Host port to expose')
   }
- 
+
   environment {
     DOCKER_HUB_REPO = 'saimanoj143/univ-app'
     ECR_REPO = '636768524979.dkr.ecr.ap-southeast-3.amazonaws.com/sai-capgemini'
     AWS_REGION = 'ap-southeast-3'
   }
- 
+
   stages {
     stage('Checkout Code') {
       steps {
         git branch: 'master', url: 'https://github.com/SaiManojMSM/Duniversity-portal.git'
       }
     }
- 
+
     stage('Build Docker Image') {
       steps {
         sh "docker build -t ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} ."
       }
     }
- 
+
     stage('Login to Docker Hub') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -33,13 +33,13 @@ pipeline {
         }
       }
     }
- 
+
     stage('Push to Docker Hub') {
       steps {
         sh "docker push ${DOCKER_HUB_REPO}:${params.IMAGE_TAG}"
       }
     }
- 
+
     stage('Login to AWS ECR') {
       steps {
         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
@@ -50,7 +50,7 @@ pipeline {
         }
       }
     }
- 
+
     stage('Tag and Push to ECR') {
       steps {
         script {
@@ -62,30 +62,26 @@ pipeline {
         }
       }
     }
- 
-    stage('deploy using kubernetes cluster') {
-            steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
-                script {
-                    sh "aws eks update-kubeconfig --name univ-app-cluster --region ap-southeast-3"
-                    sh "kubectl apply -f app-deployment.yaml"
-                    sh "kubectl apply -f sql-deployment.yaml"
-                }
-            }
+
+    stage('Deploy using Kubernetes Cluster') {
+      steps {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
+          script {
+            sh "aws eks update-kubeconfig --name univ-app-cluster --region ${AWS_REGION}"
+            sh "kubectl apply -f app-deployment.yaml"
+            sh "kubectl apply -f sql-deployment.yaml"
+          }
         }
+      }
     }
-
-    
-}
-
   }
- 
+
   post {
     success {
-      echo "Deployment successful: ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} running as ${params.CONTAINER_NAME} on port ${params.HOST_PORT}"
+      echo "✅ Deployment successful: ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} running as ${params.CONTAINER_NAME} on port ${params.HOST_PORT}"
     }
     failure {
-      echo "Deployment failed. Check logs for details."
+      echo "❌ Deployment failed. Check logs for details."
     }
   }
 }
