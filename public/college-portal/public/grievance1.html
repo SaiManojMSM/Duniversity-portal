@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievance Management - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Grievance Management - Admin Panel</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Grievance List</h2>
+            <table id="grievanceTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Grievance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Grievances will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Update Grievance Status</h2>
+            <form id="updateGrievanceForm">
+                <label for="grievanceId">Grievance ID:</label>
+                <input type="text" id="grievanceId" required>
+                <label for="status">Status:</label>
+                <select id="status" required>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <button type="submit">Update Status</button>
+            </form>
+        </section>
+    </main>
+    <script src="grievance1.js"></script>
+</body>
+</html>

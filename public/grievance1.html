@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Grievance Panel</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('images/img1.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+
+    header {
+      background-color: #006994;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 10px 0 5px;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    nav {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    nav.show {
+      display: flex;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 80px auto 40px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #888;
+    }
+
+    h2 {
+      text-align: center;
+      color: #003366;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      background-color: #006994;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004f6e;
+    }
+
+    /* Accept button styling */
+    button.accept {
+      background-color: #28a745;
+    }
+
+    button.accept:hover {
+      background-color: #218838;
+    }
+
+    /* Reject button styling */
+    button.reject {
+      background-color: #dc3545;
+    }
+
+    button.reject:hover {
+      background-color: #c82333;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<!-- Toggle Menu -->
+<div class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">&#9776;</div>
+
+<!-- Navigation -->
+<nav id="nav-menu">
+  <a href="home1.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable1.html">Timetable</a>
+  <a href="exams1.html">Exam Editor</a>
+  <a href="leavelogs.html">Leave Logs</a>
+  
+  <a href="grievance1.html">Grievance1</a>
+  
+</nav>
+
+<!-- Header -->
+<header>
+  <h1>🛠️ Admin Grievance Panel</h1>
+  <p>View and take action on submitted grievances</p>
+</header>
+
+<!-- Content Section -->
+<div class="container">
+  <h2>All Grievances</h2>
+  <table id="grievance-table" border="1">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Grievance</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Footer -->
+<footer>
+  &copy; 2025 DSATM Student Portal | All rights reserved.
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    toggleBtn.addEventListener('click', function () {
+      navMenu.classList.toggle('show');
+    });
+
+    // Load grievances
+    fetch('/grievances')
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById('grievance-table').querySelector('tbody');
+        data.forEach(item => {
+          const row = table.insertRow();
+          row.innerHTML = `
+            <td>${item.student_name}</td>
+            <td>${item.student_email}</td>
+            <td>${item.grievance_text}</td>
+            <td>${item.status}</td>
+            <td>
+              <button class="accept" onclick="updateStatus(${item.id}, 'accepted')">Accept</button>
+              <button class="reject" onclick="updateStatus(${item.id}, 'rejected')">Reject</button>
+            </td>
+          `;
+        });
+      });
+  });
+
+  function updateStatus(id, status) {
+    fetch('/update-grievance-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status })
+    }).then(() => location.reload());
+  }
+</script>
+
+</body>
+</html>

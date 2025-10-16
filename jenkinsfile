@@ -1,0 +1,129 @@
+pipeline {
+  agent any
+ 
+  parameters {
+    string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag')
+    string(name: 'CONTAINER_NAME', defaultValue: 'univ-portal-app', description: 'Docker container name')
+    string(name: 'HOST_PORT', defaultValue: '3001', description: 'Host port to expose')
+  }
+ 
+  environment {
+    DOCKER_HUB_REPO = 'saimanoj143/univ-app'
+    ECR_REPO = '636768524979.dkr.ecr.ap-southeast-3.amazonaws.com/sai-capgemini'
+    AWS_REGION = 'ap-southeast-3'
+  }
+ 
+  stages {
+    stage('Checkout Code') {
+      steps {
+        git branch: 'master', url: 'https://github.com/SaiManojMSM/Duniversity-College-Portal.git'
+      }
+    }
+ 
+    stage('Build Docker Image') {
+      steps {
+        sh "docker build -t ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} ."
+      }
+    }
+ 
+    stage('Login to Docker Hub') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+        }
+      }
+    }
+ 
+    stage('Push to Docker Hub') {
+      steps {
+        sh "docker push ${DOCKER_HUB_REPO}:${params.IMAGE_TAG}"
+      }
+    }
+ 
+    stage('Login to AWS ECR') {
+      steps {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
+          sh """
+            aws ecr get-login-password --region ${AWS_REGION} | \
+            docker login --username AWS --password-stdin ${ECR_REPO}
+          """
+        }
+      }
+    }
+ 
+    stage('Tag and Push to ECR') {
+      steps {
+        script {
+          def ecrImage = "${ECR_REPO}:${params.IMAGE_TAG}"
+          sh """
+            docker tag ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} ${ecrImage}
+            docker push ${ecrImage}
+          """
+        }
+      }
+    }
+ 
+    stage('Deploy Container') {
+      steps {
+        script {
+            """
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: univ-frontend
+  labels:
+    app: univ-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: univ-frontend
+  template:
+    metadata:
+      labels:
+        app: univ-frontend
+    spec:
+      containers:
+      - name: univ-frontend
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-content
+        hostPath:
+          path: /app/univ-portal/frontend
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: univ-frontend-service
+spec:
+  selector:
+    app: univ-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+            docker rm -f ${params.CONTAINER_NAME} || true
+            docker run -d --name ${params.CONTAINER_NAME} -p ${params.HOST_PORT}:3000 ${DOCKER_HUB_REPO}:${params.IMAGE_TAG}
+          """
+        }
+      }
+    }
+  }
+ 
+  post {
+    success {
+      echo "✅ Deployment successful: ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} running as ${params.CONTAINER_NAME} on port ${params.HOST_PORT}"
+    }
+    failure {
+      echo "❌ Deployment failed. Check logs for details."
+    }
+  }
+}

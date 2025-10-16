@@ -1,0 +1,1256 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('images/img1.jpg');
+
+
+      background-size: 110%;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: -1;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px; /* smaller padding */
+      background-color: #006994;
+      color: white;
+      position: relative;
+      height: 65px; /* smaller height */
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-left img {
+      width: 80px; /* increased size */
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 26px;
+      margin: 0;
+      text-align: center;
+    }
+
+    .menu-toggle {
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    nav {
+      display: none;
+      background-color: #006994;
+      padding: 10px;
+      position: absolute;
+      top: 65px; /* match new header height */
+      right: 20px;
+      border-radius: 8px;
+    }
+
+    nav.show {
+      display: block;
+    }
+
+    nav a {
+      display: block;
+      padding: 8px;
+      color: white;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      background-color: #004d6d;
+      border-radius: 4px;
+    }
+
+    .welcome {
+      text-align: center;
+      color: black;
+      background-color: rgba(255, 255, 255, 0.85);
+      max-width: 700px;
+      margin: 120px auto;
+      padding: 35px 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .welcome h2 {
+      margin-bottom: 15px;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+    }
+
+    /* Enhanced Chatbot Styles */
+    .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .chatbot-box {
+      display: none;
+      width: 350px;
+      max-height: 80vh;
+      height: auto;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      overflow: visible;
+      animation: slideUp 0.3s ease-out;
+      margin-bottom: 10px;
+    }
+    
+    .chatbot-box.open {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .chatbot-header {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chatbot-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+    }
+
+    .bot-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, #ff6b35, #f7931e);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .chatbot-title h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      font-size: 12px;
+      color: #4ade80;
+      font-weight: 500;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .chat-messages {
+      height: 320px;
+      overflow-y: auto;
+      padding: 20px;
+      background: white;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+
+    .bot-message, .user-message {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 15px;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .user-message {
+      flex-direction: row-reverse;
+    }
+
+    .bot-avatar-small {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(45deg, #06b6d4, #3b82f6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 250px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .user-message .message-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .message-content p {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message-content ul {
+      margin: 8px 0;
+      padding-left: 16px;
+    }
+
+    .message-content li {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 20px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 18px;
+    }
+
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    .chat-input-container {
+      display: flex;
+      padding: 15px 20px;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      gap: 10px;
+    }
+
+    #chat-input {
+      flex: 1;
+      border: 2px solid #e2e8f0;
+      border-radius: 25px;
+      padding: 12px 16px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    #chat-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    #send-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 16px;
+    }
+
+    #send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .chatbot-toggle {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+      60% { transform: translateY(-3px); }
+    }
+
+    .chatbot-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+    }
+
+    .chat-icon {
+      font-size: 28px;
+      color: white;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f59e0b;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    /* Chat Controls */
+    .chat-controls {
+      padding: 10px 20px;
+      background: white;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .control-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      color: #475569;
+    }
+
+    .control-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* Quick Options */
+    .quick-options {
+      padding: 15px 20px;
+      background: #f0f4ff;
+      border-top: 1px solid #c7d2fe;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .quick-option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .quick-btn {
+      background: white;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 12px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .quick-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .quick-number {
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .quick-btn:hover .quick-number {
+      background: white;
+      color: #667eea;
+    }
+
+    .quick-text {
+      font-weight: 500;
+    }
+
+    /* History Modal */
+    .history-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .history-content {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .history-close {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .history-item {
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #fef2f2;
+      border-radius: 8px;
+      border-left: 4px solid #dc2626;
+    }
+
+    .history-timestamp {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .history-messages {
+      font-size: 13px;
+    }
+
+    /* Mobile Responsive Styles */
+    @media screen and (max-width: 600px) {
+      header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+      }
+
+      header h1 {
+        position: static;
+        transform: none;
+        text-align: center;
+        font-size: 20px;
+        margin-top: 10px;
+      }
+
+      .header-left img {
+        width: 70px;
+      }
+
+      .welcome {
+        margin: 80px 15px;
+        padding: 25px 15px;
+        font-size: 15px;
+      }
+
+      .chatbot-container {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .chatbot-box {
+        width: calc(100vw - 20px);
+        height: 450px;
+        right: 10px;
+      }
+
+      .chatbot-toggle {
+        width: 55px;
+        height: 55px;
+      }
+
+      .chat-icon {
+        font-size: 24px;
+      }
+
+      .message-content {
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Image -->
+  <div class="background"></div>
+
+  <!-- Header with Logo and Toggle -->
+  <header>
+    <div class="header-left">
+      <img src="/images/logo.jpg.jpeg" alt="Logo" />
+    </div>
+  <h1>🎓 DSATM Portal - Home</h1>
+    <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+  </header>
+
+    <!-- Navigation Menu -->
+<nav id="nav-menu">
+  <a href="home1.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable1.html">Timetable</a>
+  <a href="exams1.html">Exam Editor</a>
+  <a href="leavelogs.html">Leave Logs</a>
+  <a href="grievance1.html">Grievance1</a> 
+  
+</nav>
+
+<!-- Welcome Box -->
+<section class="welcome">
+  <h2>Welcome, Rajesh 👨‍🏫</h2>
+  <p>
+    You are now logged into the DSATM Admin Panel. As an administrator, you can view and manage student leave logs and submitted grievances. 
+    Please review each request carefully and update their status as needed.
+  </p>
+</section>
+
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 DSATM Student Portal | All rights reserved.
+  </footer>
+
+  <!-- Toggle Menu Script -->
+  <script>
+    
+
+    // Background zoom follow
+    document.addEventListener("mousemove", (e) => {
+      const bg = document.querySelector(".background");
+      if (bg) {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        bg.style.backgroundPosition = `${x}% ${y}%`;
+      }
+    });
+  </script>
+
+<!-- Enhanced Admin Chatbot UI -->
+<div id="chatbot-container" class="chatbot-container">
+  <div id="chatbot-box" class="chatbot-box">
+    <div class="chatbot-header">
+      <div class="chatbot-title">
+        <div class="bot-avatar">👨‍💼</div>
+        <div>
+          <h4>DSATM Admin Assistant</h4>
+          <span class="status-indicator">● Online</span>
+        </div>
+      </div>
+      <button class="close-btn" onclick="toggleChat()">×</button>
+    </div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="welcome-message">
+        <div class="bot-message">
+          <div class="bot-avatar-small">👨‍💼</div>
+          <div class="message-content">
+            <p>Hi Admin! I can help you manage:</p>
+            <ul>
+              <li>📊 Student records</li>
+              <li>📝 Leave applications</li>
+              <li>🔍 Grievance reports</li>
+              <li>📅 Exam management</li>
+              <li>📚 Course scheduling</li>
+              <li>📈 Analytics & reports</li>
+            </ul>
+            <p>How can I assist you today?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="typing-indicator" id="typing-indicator" style="display: none;">
+      <div class="bot-avatar-small">👨‍💼</div>
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="chat-controls">
+      <div class="control-buttons">
+        <button class="control-btn" onclick="adminChatbot.showHistory()" title="Chat History">📜</button>
+        <button class="control-btn" onclick="adminChatbot.clearChat()" title="Clear Chat">🗑️</button>
+        <button class="control-btn" onclick="adminChatbot.toggleQuickOptions()" title="Quick Options">⚙️</button>
+      </div>
+    </div>
+    <div class="quick-options" id="quick-options" style="display: none;">
+      <div class="quick-option-grid">
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('student records')">
+          <span class="quick-number">1</span>
+          <span class="quick-text">📊 Students</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('leave applications')">
+          <span class="quick-number">2</span>
+          <span class="quick-text">📄 Leave</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('grievances')">
+          <span class="quick-number">3</span>
+          <span class="quick-text">🔍 Grievances</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('exam management')">
+          <span class="quick-number">4</span>
+          <span class="quick-text">📅 Exams</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('course schedule')">
+          <span class="quick-number">5</span>
+          <span class="quick-text">📚 Courses</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('faculty')">
+          <span class="quick-number">6</span>
+          <span class="quick-text">👨‍🏫 Faculty</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('analytics')">
+          <span class="quick-number">7</span>
+          <span class="quick-text">📈 Reports</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('system status')">
+          <span class="quick-number">8</span>
+          <span class="quick-text">🖥️ System</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('fees')">
+          <span class="quick-number">9</span>
+          <span class="quick-text">💰 Fees</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('help')">
+          <span class="quick-number">10</span>
+          <span class="quick-text">🆘 Help</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('app issues')">
+          <span class="quick-number">11</span>
+          <span class="quick-text">🔧 Issues</span>
+        </button>
+        <button class="quick-btn" onclick="adminChatbot.quickQuery('contact support')">
+          <span class="quick-number">12</span>
+          <span class="quick-text">📞 Support</span>
+        </button>
+      </div>
+    </div>
+    <div class="chat-input-container">
+      <input type="text" id="chat-input" placeholder="Ask about student management..." />
+      <button id="send-btn" onclick="sendMessage()">📤</button>
+    </div>
+  </div>
+  <div class="chatbot-toggle" onclick="toggleChat()">
+    <span class="chat-icon">💬</span>
+    <div class="notification-badge" id="notification-badge">!</div>
+  </div>
+</div>
+<script>
+// Enhanced Admin Chatbot with comprehensive responses
+class DSATMAdminChatbot {
+  constructor() {
+    this.isOpen = false;
+    this.messageHistory = [];
+    this.init();
+  }
+
+  // Admin-specific knowledge base with troubleshooting
+  responses = {
+    // App issues and troubleshooting
+    appissues: {
+      patterns: ['app issues', 'app not working', 'problem', 'error', 'bug', 'crash', 'broken', 'not loading', 'slow'],
+      response: `🔧 <strong>Admin App Troubleshooting:</strong><br>
+        🔄 Try refreshing the admin panel (Ctrl+F5)<br>
+        🌐 Verify network connectivity<br>
+        📱 Clear browser cache and cookies<br>
+        🚫 Check for browser extension conflicts<br>
+        🔄 Restart browser completely<br>
+        🔍 Check server status<br><br>
+        📞 <em>Still issues? Contact IT: 080-1234-5678 (Priority Line)</em>`
+    },
+
+    // Support and contact
+    support: {
+      patterns: ['contact support', 'help desk', 'technical support', 'it support', 'contact', 'phone number'],
+      response: `📞 <strong>Admin Support:</strong><br>
+        📞 IT Helpdesk: 080-1234-5678<br>
+        🚑 Emergency: 080-1234-5679<br>
+        📧 Email: admin-support@dsatm.edu.in<br>
+        🕰️ Hours: 24/7 for critical issues<br>
+        🏢 Location: IT Office, Ground Floor<br><br>
+        💬 <em>Priority support for administrative issues!</em>`
+    },
+
+    // Student management queries
+    students: {
+      patterns: ['student', 'students', 'enrollment', 'records', 'student records'],
+      response: `📊 <strong>Student Management:</strong><br>
+        🎓 Total Enrolled: 1,247 students<br>
+        🟢 Active: 1,201 students<br>
+        🟡 On Leave: 32 students<br>
+        🔴 Inactive: 14 students<br><br>
+        📝 <em>Access student portal for detailed records</em>`
+    },
+
+    // Leave management queries
+    leave: {
+      patterns: ['leave', 'leaves', 'leave application', 'leave requests', 'absent'],
+      response: `📄 <strong>Leave Management:</strong><br>
+        📝 Pending Applications: 23<br>
+        ✅ Approved Today: 8<br>
+        ❌ Rejected Today: 2<br>
+        🕰️ Overdue Reviews: 5<br><br>
+        💡 <em>Check leave logs for detailed review</em>`
+    },
+
+    // Grievance management
+    grievance: {
+      patterns: ['grievance', 'grievances', 'complaint', 'complaints', 'issues'],
+      response: `🔍 <strong>Grievance Reports:</strong><br>
+        📝 Open Cases: 12<br>
+        🔄 Under Investigation: 7<br>
+        ✅ Resolved This Week: 15<br>
+        ⚠️ High Priority: 3<br><br>
+        💡 <em>Review grievance dashboard for details</em>`
+    },
+
+    // Exam management
+    exam: {
+      patterns: ['exam', 'exams', 'examination', 'exam schedule', 'exam management'],
+      response: `📅 <strong>Exam Management:</strong><br>
+        📚 Current Semester: 3rd Semester<br>
+        📅 Exam Period: Oct 1-10, 2025<br>
+        📋 Registered Students: 1,185<br>
+        📝 Pending Registrations: 16<br><br>
+        💡 <em>Use exam editor for schedule changes</em>`
+    },
+
+    // Course and timetable management
+    course: {
+      patterns: ['course', 'courses', 'timetable', 'schedule', 'class schedule'],
+      response: `📚 <strong>Course Management:</strong><br>
+        📝 Active Courses: 45<br>
+        👨‍🏫 Faculty Assigned: 28<br>
+        🏢 Classrooms: 15 allocated<br>
+        🔄 Schedule Conflicts: 2<br><br>
+        💡 <em>Update timetables in course editor</em>`
+    },
+
+    // Faculty management
+    faculty: {
+      patterns: ['faculty', 'teacher', 'teachers', 'staff', 'instructor'],
+      response: `👨‍🏫 <strong>Faculty Management:</strong><br>
+        👥 Total Faculty: 32<br>
+        ✅ Present Today: 28<br>
+        🏥 On Leave: 3<br>
+        📝 Substitute Required: 1<br><br>
+        💡 <em>Check faculty portal for attendance</em>`
+    },
+
+    // Analytics and reports
+    analytics: {
+      patterns: ['analytics', 'report', 'reports', 'statistics', 'stats', 'performance'],
+      response: `📈 <strong>Analytics & Reports:</strong><br>
+        📊 Overall Attendance: 87%<br>
+        🎆 Pass Rate: 92%<br>
+        📝 Assignment Completion: 89%<br>
+        💰 Fee Collection: 94%<br><br>
+        💡 <em>Generate detailed reports from dashboard</em>`
+    },
+
+    // System management
+    system: {
+      patterns: ['system', 'portal', 'maintenance', 'backup', 'database'],
+      response: `🖥️ <strong>System Management:</strong><br>
+        ✅ Portal Status: Online<br>
+        💾 Last Backup: 2 hours ago<br>
+        👥 Active Users: 1,043<br>
+        🔧 Maintenance: Scheduled for Sunday<br><br>
+        💡 <em>Contact IT for technical issues</em>`
+    },
+
+    // Fee management
+    fees: {
+      patterns: ['fee', 'fees', 'payment', 'finance', 'accounts'],
+      response: `💰 <strong>Fee Management:</strong><br>
+        💳 Total Collected: ₹42,85,000<br>
+        🔴 Outstanding: ₹8,15,000<br>
+        📅 Due This Month: ₹5,20,000<br>
+        📧 Reminders Sent: 145<br><br>
+        💡 <em>Access accounts section for details</em>`
+    },
+
+    // General help
+    help: {
+      patterns: ['help', 'what can you do', 'options', 'commands', 'assist'],
+      response: `👨‍💼 <strong>Admin Assistant Features:</strong><br>
+        📊 Student records & enrollment<br>
+        📄 Leave application management<br>
+        🔍 Grievance & complaint handling<br>
+        📅 Exam scheduling & management<br>
+        📚 Course & timetable management<br>
+        📈 Analytics & reporting<br>
+        💰 Fee management & collection<br><br>
+        💬 <em>Ask me about any administrative task!</em>`
+    },
+
+    // Greeting responses
+    greeting: {
+      patterns: ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening'],
+      response: `👋 <strong>Hello Administrator!</strong><br>
+        Welcome to the DSATM Admin Assistant. I'm here to help you manage all administrative tasks efficiently.<br><br>
+        🎯 <em>Try asking about students, leave applications, or system reports!</em>`
+    }
+  };
+
+  init() {
+    this.bindEvents();
+    this.hideNotification();
+  }
+
+  bindEvents() {
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.sendMessage();
+      }
+    });
+
+    sendBtn.addEventListener('click', () => this.sendMessage());
+  }
+
+  toggleChat() {
+    const chatbox = document.getElementById('chatbot-box');
+    this.isOpen = !this.isOpen;
+    
+    if (this.isOpen) {
+      chatbox.classList.add('open');
+      this.hideNotification();
+      document.getElementById('chat-input').focus();
+      // Ensure proper scroll functionality
+      setTimeout(() => this.scrollToBottom(), 100);
+    } else {
+      chatbox.classList.remove('open');
+    }
+  }
+
+  sendMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+
+    this.addUserMessage(message);
+    input.value = '';
+    
+    this.showTypingIndicator();
+    
+    setTimeout(() => {
+      this.hideTypingIndicator();
+      this.processMessage(message);
+    }, 1000 + Math.random() * 1000);
+  }
+
+  addUserMessage(message) {
+    const messagesContainer = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'user-message';
+    messageDiv.innerHTML = `
+      <div class="user-avatar">👨‍💼</div>
+      <div class="message-content">
+        <p>${message}</p>
+      </div>
+    `;
+    messagesContainer.appendChild(messageDiv);
+    this.scrollToBottom();
+  }
+
+  addBotMessage(message) {
+    const messagesContainer = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'bot-message';
+    messageDiv.innerHTML = `
+      <div class="bot-avatar-small">👨‍💼</div>
+      <div class="message-content">
+        ${message}
+      </div>
+    `;
+    messagesContainer.appendChild(messageDiv);
+    this.scrollToBottom();
+  }
+
+  processMessage(message) {
+    const lowerMessage = message.toLowerCase();
+    let response = this.getDefaultResponse();
+    
+    // Find matching response
+    for (const [category, data] of Object.entries(this.responses)) {
+      if (data.patterns.some(pattern => lowerMessage.includes(pattern))) {
+        response = data.response;
+        break;
+      }
+    }
+    
+    this.addBotMessage(response);
+  }
+
+  getDefaultResponse() {
+    const defaultResponses = [
+      `🤔 I'm not sure about that. Try asking about:<br>
+       📊 Students • 📄 Leave Apps • 🔍 Grievances • 📅 Exams<br>
+       📚 Courses • 📈 Reports • 💰 Fees • 🔧 System`,
+      
+      `❓ Could you be more specific? I can help with:<br>
+       🎯 Administrative management tasks<br>
+       📊 Student and faculty oversight<br>
+       💡 Type "help" to see all capabilities!`,
+       
+      `🔍 I didn't understand that. Popular queries:<br>
+       "Show student statistics"<br>
+       "How many leave applications?"<br>
+       "Any pending grievances?"`
+    ];
+    
+    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+  }
+
+  showTypingIndicator() {
+    document.getElementById('typing-indicator').style.display = 'flex';
+    this.scrollToBottom();
+  }
+
+  hideTypingIndicator() {
+    document.getElementById('typing-indicator').style.display = 'none';
+  }
+
+  scrollToBottom() {
+    const messagesContainer = document.getElementById('chat-messages');
+    setTimeout(() => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 100);
+  }
+
+  hideNotification() {
+    const badge = document.getElementById('notification-badge');
+    if (this.isOpen) {
+      badge.style.display = 'none';
+    }
+  }
+
+  // Save conversation to history
+  saveToHistory(userMessage, botResponse) {
+    const conversation = {
+      timestamp: new Date(),
+      user: userMessage,
+      bot: botResponse
+    };
+    this.messageHistory.push(conversation);
+    
+    // Keep only last 20 conversations
+    if (this.messageHistory.length > 20) {
+      this.messageHistory = this.messageHistory.slice(-20);
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('dsatm_admin_chat_history', JSON.stringify(this.messageHistory));
+  }
+
+  // Load history from localStorage
+  loadHistory() {
+    const saved = localStorage.getItem('dsatm_admin_chat_history');
+    if (saved) {
+      this.messageHistory = JSON.parse(saved);
+    }
+  }
+
+  // Show chat history modal
+  showHistory() {
+    this.loadHistory();
+    
+    if (this.messageHistory.length === 0) {
+      this.addBotMessage('📜 <strong>No chat history found!</strong><br>Start a conversation to see your admin chat history here.');
+      return;
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'history-modal';
+    modal.innerHTML = `
+      <div class="history-content">
+        <div class="history-header">
+          <h3>📜 Admin Chat History</h3>
+          <button class="history-close" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
+        </div>
+        <div class="history-list">
+          ${this.messageHistory.map(item => `
+            <div class="history-item">
+              <div class="history-timestamp">${new Date(item.timestamp).toLocaleString()}</div>
+              <div class="history-messages">
+                <strong>You:</strong> ${item.user}<br>
+                <strong>Admin Bot:</strong> ${item.bot.replace(/<[^>]*>/g, '').substring(0, 100)}...
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+  }
+
+  // Clear chat messages
+  clearChat() {
+    const messagesContainer = document.getElementById('chat-messages');
+    messagesContainer.innerHTML = `
+      <div class="welcome-message">
+        <div class="bot-message">
+          <div class="bot-avatar-small">👨‍💼</div>
+          <div class="message-content">
+            <p>✨ Admin chat cleared! How can I assist you with administrative tasks?</p>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Also clear history
+    this.messageHistory = [];
+    localStorage.removeItem('dsatm_admin_chat_history');
+  }
+
+  // Toggle quick options
+  toggleQuickOptions() {
+    const quickOptions = document.getElementById('quick-options');
+    quickOptions.style.display = quickOptions.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Handle quick query buttons
+  quickQuery(query) {
+    const input = document.getElementById('chat-input');
+    input.value = query;
+    this.sendMessage();
+    
+    // Hide quick options after selection
+    document.getElementById('quick-options').style.display = 'none';
+  }
+
+  // Override processMessage to save to history
+  processMessage(message) {
+    const lowerMessage = message.toLowerCase();
+    let response = this.getDefaultResponse();
+    
+    // Find matching response
+    for (const [category, data] of Object.entries(this.responses)) {
+      if (data.patterns.some(pattern => lowerMessage.includes(pattern))) {
+        response = data.response;
+        break;
+      }
+    }
+    
+    this.addBotMessage(response);
+    this.saveToHistory(message, response);
+  }
+}
+
+// Initialize admin chatbot
+const adminChatbot = new DSATMAdminChatbot();
+
+// Global functions for onclick handlers
+function toggleChat() {
+  adminChatbot.toggleChat();
+}
+
+function sendMessage() {
+  adminChatbot.sendMessage();
+}
+
+// Auto-show notification after page load
+setTimeout(() => {
+  const badge = document.getElementById('notification-badge');
+  if (badge && !adminChatbot.isOpen) {
+    badge.style.display = 'flex';
+    badge.textContent = '!';
+  }
+}, 3000);
+</script>
+
+  <!-- Universal Menu Toggle Script -->
+  <script src="menu-toggle.js"></script>
+
+</body>
+</html>
+

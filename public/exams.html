@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exam Schedule | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f0faff; color: #003f5c; }
+    .background { position: fixed; top:0; left:0; height:100%; width:100%; background-image:url('images/img1.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat; z-index:-1; }
+    header { background-color:#006994; color:white; padding:30px 20px; text-align:center; position:relative; }
+    header h1 { margin:0; font-size:30px; }
+    .menu-toggle { position:absolute; top:20px; right:20px; font-size:28px; background-color:#004f6e; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; z-index:1000; }
+    nav#nav-menu { position:absolute; top:80px; right:20px; background-color:#e0f4fa; display:none; flex-direction:column; border-radius:10px; padding:10px; box-shadow:0 2px 8px rgba(0,0,0,0.3); z-index:999; }
+    nav#nav-menu.show { display:flex; }
+    nav#nav-menu a { text-decoration:none; color:#004f6e; padding:10px 15px; background-color:#b3e0f2; margin:5px 0; border-radius:6px; font-weight:bold; text-align:center; transition:0.3s; }
+    nav#nav-menu a:hover { background-color:#80c8e8; transform:scale(1.05); }
+
+    .container { max-width:1000px; margin:30px auto; padding:20px; background-color:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    .controls { display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap; margin-bottom:20px; }
+    .controls label { font-size:14px; font-weight:600; color:#004f6e; }
+    select { padding:8px 12px; border-radius:6px; border:1px solid #ccc; font-weight:600; background:white; cursor:pointer; }
+
+    .semester-buttons { text-align:center; margin-bottom:20px; }
+    .semester-buttons button { margin:0 6px; padding:10px 18px; font-weight:bold; border:none; border-radius:8px; background-color:#006994; color:white; cursor:pointer; transition:0.3s; }
+    .semester-buttons button:hover, .semester-buttons button.active { background-color:#004f6e; }
+
+    .semester-table { display:none; }
+    .semester-table.active { display:block; }
+    table { width:100%; border-collapse:collapse; margin-top:15px; }
+    th, td { border:1px solid #ccc; padding:10px; text-align:center; }
+    th { background-color:#006994; color:white; }
+
+    .notice { text-align:center; margin-bottom:16px; color:#004f6e; font-weight:600; }
+    footer { background-color:#003344; color:white; text-align:center; padding:16px; font-size:14px; margin-top:30px; }
+  </style>
+</head>
+<body>
+<div class="background"></div>
+
+<header>
+  <h1>📝 Exam Schedule</h1>
+  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+</header>
+
+<nav id="nav-menu">
+  <a href="home.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable.html">Class Timetable</a>
+  <a href="exams.html">Exam Schedule</a>
+  <a href="leave.html">Leave Application</a>
+  <a href="grievance.html">Grievance</a>
+  <a href="assignments.html">Assignments</a>
+  <a href="attendance.html">Attendance</a>
+</nav>
+
+<div class="container">
+  <div id="notice" class="notice">Loading exam schedule...</div>
+
+  <div class="controls">
+    <label for="branchSelect">Branch:</label>
+    <select id="branchSelect">
+      <option value="">-- Choose branch --</option>
+      <option value="CS">CS</option>
+      <option value="Mechanical">Mechanical</option>
+      <option value="CIVIL">CIVIL</option>
+      <option value="AIML">AIML</option>
+      <option value="DataScience">Data Science</option>
+      <option value="EC">EC</option>
+      <option value="EEE">EEE</option>
+    </select>
+  </div>
+
+  <div class="semester-buttons" id="semester-buttons">
+    <button class="semester-btn active" data-sem="sem1">Semester 1</button>
+    <button class="semester-btn" data-sem="sem2">Semester 2</button>
+    <button class="semester-btn" data-sem="sem3">Semester 3</button>
+    <button class="semester-btn" data-sem="sem4">Semester 4</button>
+    <button class="semester-btn" data-sem="sem5">Semester 5</button>
+  </div>
+
+  <div id="exam-wrapper"></div>
+</div>
+
+<footer>
+  &copy; 2025 DSATM Student Portal | All rights reserved.
+</footer>
+
+<script>
+  function renderExamForBranch(branch, examObj) {
+    const wrapper = document.getElementById('exam-wrapper');
+    wrapper.innerHTML = '';
+    const semOrder = ['sem1','sem2','sem3','sem4','sem5'];
+
+    // disable buttons where no data exists (still visible for consistency)
+    document.querySelectorAll('.semester-btn').forEach(btn => {
+      const semId = btn.dataset.sem;
+      const hasData = examObj && Array.isArray(examObj[semId]) && examObj[semId].length > 0;
+      btn.disabled = !hasData;
+      btn.style.opacity = hasData ? '1' : '0.7';
+    });
+
+    // build tables
+    semOrder.forEach(semId => {
+      const semDiv = document.createElement('div');
+      semDiv.id = semId;
+      semDiv.className = 'semester-table';
+
+      const data = examObj && examObj[semId];
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        semDiv.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">No exam schedule published yet.</p>';
+      } else {
+        const table = document.createElement('table');
+        data.forEach((rowArr, rIdx) => {
+          const tr = document.createElement('tr');
+          rowArr.forEach(cell => {
+            if (rIdx === 0) {
+              const th = document.createElement('th'); th.textContent = cell; tr.appendChild(th);
+            } else {
+              const td = document.createElement('td'); td.textContent = cell; tr.appendChild(td);
+            }
+          });
+          table.appendChild(tr);
+        });
+        semDiv.appendChild(table);
+      }
+      wrapper.appendChild(semDiv);
+    });
+
+    // default active semester
+    document.querySelectorAll('.semester-table').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sem1').classList.add('active');
+    document.querySelector('[data-sem="sem1"]').classList.add('active');
+
+    document.getElementById('notice').textContent = `Showing exam schedule for branch: ${branch}`;
+    attachSemesterButtonListeners();
+  }
+
+  function attachSemesterButtonListeners() {
+    const semesterButtons = document.getElementById('semester-buttons');
+    const cloned = semesterButtons.cloneNode(true);
+    semesterButtons.parentNode.replaceChild(cloned, semesterButtons);
+
+    cloned.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('semester-btn')) return;
+      const sem = e.target.dataset.sem;
+      if (e.target.disabled) return;
+
+      document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.semester-table').forEach(t => t.classList.remove('active'));
+
+      e.target.classList.add('active');
+      document.getElementById(sem)?.classList.add('active');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const branchSelect = document.getElementById('branchSelect');
+    const savedBranch = localStorage.getItem('selectedBranchExam');
+    if (savedBranch) {
+      branchSelect.value = savedBranch;
+      loadExamSchedule(savedBranch);
+    }
+
+    branchSelect.addEventListener('change', function () {
+      const branch = this.value;
+      localStorage.setItem('selectedBranchExam', branch);
+      loadExamSchedule(branch);
+    });
+
+    function loadExamSchedule(branch) {
+      if (!branch) {
+        document.getElementById('notice').textContent = 'Please select a branch.';
+        document.getElementById('exam-wrapper').innerHTML = '';
+        return;
+      }
+      fetch(`/get-exams/${branch}`)
+        .then(res => {
+          if (!res.ok) throw new Error('No exam schedule');
+          return res.json();
+        })
+        .then(data => renderExamForBranch(branch, data))
+        .catch(() => {
+          document.getElementById('notice').textContent = `No exam schedule published for branch: ${branch}`;
+          document.getElementById('exam-wrapper').innerHTML = '';
+        });
+    }
+
+    attachSemesterButtonListeners();
+  });
+</script>
+
+<!-- Universal Menu Toggle Script -->
+<script src="menu-toggle.js"></script>
+</body>
+</html>

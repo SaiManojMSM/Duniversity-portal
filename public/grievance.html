@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Grievance</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('images/img1.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+
+    header {
+      background-color: rgba(0, 123, 255, 0.85);
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 10px 0 5px;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    nav {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    nav.show {
+      display: flex;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 0;
+    }
+
+    section {
+      max-width: 800px;
+      margin: 80px auto 40px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #888;
+    }
+
+    form input,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #0056b3;
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #003366;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.6);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .filter-buttons {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .filter-buttons button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #0066cc;
+      color: white;
+      cursor: pointer;
+    }
+
+    .filter-buttons button:hover {
+      background-color: #004999;
+    }
+
+    .grievance-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .grievance-table th,
+    .grievance-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .grievance-table th {
+      background-color: #f2f2f2;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<!-- Toggle Menu -->
+<div class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">&#9776;</div>
+
+<!-- Navigation -->
+<nav id="nav-menu">
+  <a href="home.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable.html">Class Timetable</a>
+  <a href="exams.html">Exam Schedule</a>
+  <a href="leave.html">Leave Application</a>
+ 
+  <a href="grievance.html">Grievance</a>
+  
+  <a href="assignments.html">Assignments</a>
+  <a href="attendance.html">Attendance</a>
+</nav>
+
+<!-- Header -->
+<header>
+  <h1>📢 Student Grievance</h1>
+  <p>Submit and view accepted, pending, and rejected grievances</p>
+</header>
+
+<!-- Main Section -->
+<section>
+  <h2>Submit Grievance</h2>
+  <form action="/submit-grievance" method="POST">
+    <input type="text" name="student_name" placeholder="Your Name" required />
+    <input type="email" name="student_email" placeholder="Your Email" required />
+    <textarea name="grievance_text" placeholder="Enter your grievance" required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Filter Buttons -->
+  <div class="filter-buttons">
+    <button id="toggle-status">📂 Status</button>
+    <div id="status-options" class="hidden">
+      <button onclick="filterGrievances('accepted')">✅ Accepted</button>
+      <button onclick="filterGrievances('pending')">⏳ Pending</button>
+      <button onclick="filterGrievances('rejected')">❌ Rejected</button>
+    </div>
+  </div>
+
+  <!-- Grievance Table -->
+  <table class="grievance-table hidden" id="grievance-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Grievance</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="grievance-body"></tbody>
+  </table>
+</section>
+
+<!-- Footer -->
+<footer>
+  &copy; 2025 DSATM Student Portal | All rights reserved.
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const statusToggle = document.getElementById('toggle-status');
+    const statusOptions = document.getElementById('status-options');
+    const table = document.getElementById('grievance-table');
+    const tbody = document.getElementById('grievance-body');
+
+    toggleBtn.addEventListener('click', function () {
+      navMenu.classList.toggle('show');
+    });
+
+    statusToggle.addEventListener('click', function () {
+      statusOptions.classList.toggle('hidden');
+    });
+
+    window.filterGrievances = function (status) {
+      fetch('/grievances')
+        .then(res => res.json())
+        .then(data => {
+          const filtered = data.filter(item => item.status === status);
+          tbody.innerHTML = '';
+          filtered.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.student_name}</td>
+              <td>${item.student_email}</td>
+              <td>${item.grievance_text}</td>
+              <td>${item.status}</td>
+            `;
+            tbody.appendChild(row);
+          });
+          table.classList.remove('hidden');
+        });
+    };
+  });
+</script>
+</body>
+</html>

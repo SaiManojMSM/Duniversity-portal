@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Class Timetable | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f0faff;
+      color: #003f5c;
+    }
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('images/img1.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+    header {
+      background-color: #006994;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+    .menu-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 28px;
+      background-color: #004f6e;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    nav#nav-menu {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      background-color: #e0f4fa;
+      display: none;
+      flex-direction: column;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+    nav#nav-menu.show {
+      display: flex;
+    }
+    nav#nav-menu a {
+      text-decoration: none;
+      color: #004f6e;
+      padding: 10px 15px;
+      background-color: #b3e0f2;
+      margin: 5px 0;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      transition: 0.3s;
+    }
+    nav#nav-menu a:hover {
+      background-color: #80c8e8;
+      transform: scale(1.05);
+    }
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .controls label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #004f6e;
+    }
+    select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-weight: 600;
+      background: white;
+      cursor: pointer;
+    }
+    .semester-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .semester-buttons button {
+      margin: 0 6px;
+      padding: 10px 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #006994;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .semester-buttons button:hover,
+    .semester-buttons button.active {
+      background-color: #004f6e;
+    }
+    .semester-table {
+      display: none;
+    }
+    .semester-table.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #006994;
+      color: white;
+    }
+    .notice {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #004f6e;
+      font-weight: 600;
+    }
+    footer {
+      background-color: #003344;
+      color: white;
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<header>
+  <h1>📚 Class Timetable</h1>
+  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+</header>
+
+<nav id="nav-menu">
+  <a href="home.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable.html">Class Timetable</a>
+  <a href="exams.html">Exam Schedule</a>
+  <a href="leave.html">Leave Application</a>
+  <a href="grievance.html">Grievance</a>
+  <a href="assignments.html">Assignments</a>
+  <a href="attendance.html">Attendance</a>
+</nav>
+
+<div class="container">
+  <div id="notice" class="notice">Loading timetable...</div>
+
+  <div class="controls">
+    <label for="branchSelect">Branch:</label>
+    <select id="branchSelect">
+      <option value="">-- Choose branch --</option>
+      <option value="CS">CS</option>
+      <option value="Mechanical">Mechanical</option>
+      <option value="CIVIL">CIVIL</option>
+      <option value="AIML">AIML</option>
+      <option value="DataScience">Data Science</option>
+      <option value="EC">EC</option>
+      <option value="EEE">EEE</option>
+    </select>
+  </div>
+
+  <div class="semester-buttons" id="semester-buttons">
+    <button class="semester-btn active" data-sem="sem1">Semester 1</button>
+    <button class="semester-btn" data-sem="sem2">Semester 2</button>
+    <button class="semester-btn" data-sem="sem3">Semester 3</button>
+    <button class="semester-btn" data-sem="sem4">Semester 4</button>
+    <button class="semester-btn" data-sem="sem5">Semester 5</button>
+  </div>
+
+  <div id="timetables-wrapper">
+    <!-- Semester tables injected here -->
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 DSATM Student Portal | All rights reserved.
+</footer>
+
+<script>
+  function renderTimetableForBranch(branch, timetableObj) {
+    const wrapper = document.getElementById('timetables-wrapper');
+    wrapper.innerHTML = '';
+    const semOrder = ['sem1','sem2','sem3','sem4','sem5'];
+
+    // Show/hide semester buttons based on available data
+    const semesterButtons = document.getElementById('semester-buttons');
+    const availableSemesters = Object.keys(timetableObj || {});
+    
+    // Update button visibility and enable/disable them
+    document.querySelectorAll('.semester-btn').forEach(btn => {
+      const semId = btn.dataset.sem;
+      if (availableSemesters.includes(semId)) {
+        btn.style.display = 'inline-block';
+        btn.disabled = false;
+      } else {
+        btn.style.display = 'inline-block'; // Still show but make it clear no data
+        btn.disabled = false; // Keep enabled to show "no data" message
+      }
+    });
+
+    semOrder.forEach(semId => {
+      const semDiv = document.createElement('div');
+      semDiv.id = semId;
+      semDiv.className = 'semester-table';
+
+      const data = timetableObj && timetableObj[semId];
+      if (!data || !Array.isArray(data) || data.length === 0) {
+        semDiv.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">No timetable published for this semester yet.</p>';
+      } else {
+        const table = document.createElement('table');
+        data.forEach((rowArr, rIdx) => {
+          const tr = document.createElement('tr');
+          rowArr.forEach((cell) => {
+            if (rIdx === 0) {
+              const th = document.createElement('th');
+              th.textContent = cell;
+              tr.appendChild(th);
+            } else {
+              const td = document.createElement('td');
+              td.textContent = cell;
+              tr.appendChild(td);
+            }
+          });
+          table.appendChild(tr);
+        });
+        semDiv.appendChild(table);
+      }
+      wrapper.appendChild(semDiv);
+    });
+
+    // Set initial active state
+    document.querySelectorAll('.semester-table').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
+    
+    // Find first available semester or default to sem1
+    let firstAvailableSem = availableSemesters.length > 0 ? availableSemesters[0] : 'sem1';
+    if (semOrder.includes(firstAvailableSem)) {
+      document.getElementById(firstAvailableSem)?.classList.add('active');
+      document.querySelector(`[data-sem="${firstAvailableSem}"]`)?.classList.add('active');
+    } else {
+      // Fallback to sem1
+      document.getElementById('sem1')?.classList.add('active');
+      document.querySelector('[data-sem="sem1"]')?.classList.add('active');
+    }
+    
+    document.getElementById('notice').textContent = `Showing timetable for branch: ${branch}`;
+    
+    // Re-attach semester button event listeners after rendering
+    attachSemesterButtonListeners();
+  }
+
+  function attachSemesterButtonListeners() {
+    // Use event delegation to avoid duplicate listeners
+    const semesterButtons = document.getElementById('semester-buttons');
+    
+    // Remove any existing event listeners
+    const newSemesterButtons = semesterButtons.cloneNode(true);
+    semesterButtons.parentNode.replaceChild(newSemesterButtons, semesterButtons);
+    
+    // Add single delegated event listener
+    newSemesterButtons.addEventListener('click', (event) => {
+      if (event.target.classList.contains('semester-btn')) {
+        const clickedBtn = event.target;
+        const sem = clickedBtn.dataset.sem;
+        
+        console.log('Semester button clicked:', sem); // Debug log
+        
+        // Remove active class from all buttons and tables
+        document.querySelectorAll(".semester-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".semester-table").forEach(t => t.classList.remove("active"));
+        
+        // Add active class to clicked button
+        clickedBtn.classList.add("active");
+        
+        // Show corresponding semester table
+        const el = document.getElementById(sem);
+        if (el) {
+          el.classList.add("active");
+          console.log('Activated semester table:', sem); // Debug log
+        } else {
+          console.error('Semester table not found:', sem); // Debug log
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const branchSelect = document.getElementById('branchSelect');
+
+    // Restore last selected branch
+    const savedBranch = localStorage.getItem('selectedBranch');
+    if (savedBranch) {
+      branchSelect.value = savedBranch;
+      loadBranchTimetable(savedBranch);
+    }
+
+    branchSelect.addEventListener('change', function () {
+      const branch = this.value;
+      localStorage.setItem('selectedBranch', branch);
+      loadBranchTimetable(branch);
+    });
+
+    function loadBranchTimetable(branch) {
+      if (!branch) {
+        document.getElementById('notice').textContent = 'Please select a branch to view timetable.';
+        document.getElementById('timetables-wrapper').innerHTML = '';
+        return;
+      }
+
+      // ✅ Fetch timetable from backend
+      fetch(`/get-timetable/${branch}`)
+        .then(res => {
+          if (!res.ok) {
+            if (res.status === 404) {
+              throw new Error('No timetable found');
+            }
+            throw new Error('Failed to fetch timetable');
+          }
+          return res.json();
+        })
+        .then(allData => {
+          // Check if we have valid timetable data
+          if (allData && typeof allData === 'object' && Object.keys(allData).length > 0) {
+            renderTimetableForBranch(branch, allData);
+          } else {
+            document.getElementById('notice').textContent = `No timetable found for branch: ${branch}`;
+            document.getElementById('timetables-wrapper').innerHTML = '';
+          }
+        })
+        .catch(err => {
+          console.error('Error loading timetable:', err);
+          if (err.message === 'No timetable found') {
+            document.getElementById('notice').textContent = `No timetable published yet for branch: ${branch}`;
+          } else {
+            document.getElementById('notice').textContent = 'Error loading timetable from server.';
+          }
+          document.getElementById('timetables-wrapper').innerHTML = '';
+        });
+    }
+
+    // Initial semester button listeners (these will be replaced when data loads)
+    attachSemesterButtonListeners();
+  });
+</script>
+
+<!-- Universal Menu Toggle Script -->
+<script src="menu-toggle.js"></script>
+
+</body>
+</html>

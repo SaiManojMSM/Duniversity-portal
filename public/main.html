@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="main.js"></script>
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('images/img1.jpg');
+
+      background-size: 110%;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: -1;
+    }
+
+    .top-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #006994;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 30px;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-header .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .top-header img {
+      width: 90px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .top-header h1 {
+      color: white;
+      font-size: 30px;
+      margin: 0;
+    }
+
+    .login-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .login-buttons button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #004d6d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .login-buttons button:hover {
+      background-color: #002f40;
+    }
+
+    .carousel-box {
+      margin-top: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      gap: 12px;
+    }
+
+    .carousel-content {
+      background-color: rgba(255, 255, 255, 0.75); /* More transparent now */
+      color: black;
+      padding: 20px 30px;
+      width: 90%;
+      max-width: 400px;
+      font-size: 17px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: opacity 0.6s ease-in-out;
+      text-align: center;
+      min-height: 300px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+
+    .carousel-arrow {
+      background-color: #ffffffcc;
+      color: #006994;
+      border: none;
+      font-size: 28px;
+      padding: 6px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background-color 0.3s;
+    }
+
+    .carousel-arrow:hover {
+      background-color: #fff;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: black;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+
+    .modal-content input[type="submit"] {
+      background-color: #006994;
+      color: white;
+      padding: 10px;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-content input[type="submit"]:hover {
+      background-color: #004d6d;
+    }
+
+    #login-success-popup {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-weight: bold;
+      z-index: 9999;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      animation: fade 2.5s ease-in-out forwards;
+    }
+
+    @keyframes fade {
+      0%   { opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media screen and (max-width: 600px) {
+      .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .login-buttons {
+        margin-top: 10px;
+      }
+
+      .carousel-box {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .carousel-content {
+        font-size: 15px;
+        width: 85%;
+        min-height: 250px;
+      }
+
+      .carousel-arrow {
+        font-size: 26px;
+      }
+    }
+  </style>
+
+  <script>
+    const slides = [
+      `<p><strong>🎓 About DSATM:</strong> Dayananda Sagar Academy of Technology and Management aims at achieving academic excellence through continuous improvement in all spheres of Technical and Management education. “We Redefine Quality Education & Our Accreditations are a Proof of Our Quality.”</p>`,
+      `<p><strong>🏆 Achievements:</strong> Ranked <strong>17th across India</strong> in OBE Rankings 2021. Positioned in the <strong>A2 BAND</strong>: Institution of Academic Excellence. Organized “International Project Competition 2022” by Department of ISE. Partnered with Certiport CATC and Quantum Learnings for global certifications.</p>`,
+      `<p><strong>📍 Contact Info:</strong><br>
+      Dayananda Sagar Academy of Technology & Management (DSATM)<br>
+      Opp. to Art of Living International Centre,<br>
+      Kanakpura Road, Udaypura, Bangalore - 560082<br>
+      ☎️ +91 8951890085 / 8951890084 / 9164100087<br>
+      📧 principal@dsatm.edu.in</p>`
+    ];
+
+    let currentSlide = 0;
+    let slideInterval;
+
+    function showSlide(index) {
+      const container = document.getElementById("carousel-container");
+      container.innerHTML = slides[index];
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function startCarousel() {
+      slideInterval = setInterval(nextSlide, 4000);
+    }
+
+    function stopCarousel() {
+      clearInterval(slideInterval);
+    }
+
+    function openModal(id) {
+      document.getElementById(id).style.display = "block";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function validateStudentLogin() {
+      const username = document.getElementById("student-username").value;
+      const password = document.getElementById("student-password").value;
+      if (username === "student@dsatm.edu.in" && password === "student123") {
+        showPopup("Login Successful!");
+        closeModal('studentModal');
+        return false;
+      }
+      alert("Invalid student credentials");
+      return false;
+    }
+
+    function validateAdminLogin() {
+      const username = document.getElementById("admin-username").value;
+      const password = document.getElementById("admin-password").value;
+      if (username === "admin@dsatm.edu.in" && password === "admin123") {
+        showPopup("Admin Login Successful!");
+        closeModal('adminModal');
+        return false;
+      }
+      alert("Invalid admin credentials");
+      return false;
+    }
+
+    function showPopup(message) {
+      const popup = document.getElementById("login-success-popup");
+      popup.innerText = message;
+      popup.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2500);
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const studentModal = document.getElementById('studentModal');
+      const adminModal = document.getElementById('adminModal');
+      
+      if (event.target === studentModal) {
+        studentModal.style.display = "none";
+      }
+      if (event.target === adminModal) {
+        adminModal.style.display = "none";
+      }
+    };
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal('studentModal');
+        closeModal('adminModal');
+      }
+    });
+
+    window.onload = () => {
+      showSlide(currentSlide);
+      startCarousel();
+    };
+  </script>
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <div class="top-header">
+    <div class="logo-title">
+      <img src="images/logo.jpg.jpeg" alt="Logo" />
+
+      <h1>🎓DSATM Student Portal</h1>
+    </div>
+    <div class="login-buttons">
+      <button onclick="openModal('studentModal')">Student Login</button>
+      <button onclick="openModal('adminModal')">Admin Login</button>
+    </div>
+  </div>
+
+  <div class="carousel-box">
+    <button class="carousel-arrow" onclick="prevSlide(); stopCarousel(); startCarousel();">&lt;</button>
+    <div class="carousel-content" id="carousel-container"></div>
+    <button class="carousel-arrow" onclick="nextSlide(); stopCarousel(); startCarousel();">&gt;</button>
+  </div>
+
+  <div id="studentModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('studentModal')">&times;</span>
+      <h2>Student Login</h2>
+      <form onsubmit="return validateStudentLogin()">
+        <label for="student-username">Username:</label>
+        <input type="text" id="student-username" placeholder="Username" required>
+
+        <label for="student-password">Password:</label>
+        <input type="password" id="student-password" placeholder="Password" required>
+
+        <input type="checkbox" onclick="togglePassword('student-password')"> Show Password
+        <br><br>
+
+        <input type="submit" value="Login">
+      </form>
+    </div>
+  </div>
+  
+  <div id="adminModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('adminModal')">&times;</span>
+      <h2>Admin Login</h2>
+      <form onsubmit="return validateAdminLogin()">
+        <label for="admin-username">Username:</label>
+        <input type="text" id="admin-username" placeholder="Username" required>
+
+        <label for="admin-password">Password:</label>
+        <input type="password" id="admin-password" placeholder="Password" required>
+
+        <input type="checkbox" onclick="togglePassword('admin-password')"> Show Password
+        <br><br>
+
+        <input type="submit" value="Login">
+      </form>
+    </div>
+  </div>
+
+  <div id="login-success-popup"></div>
+
+  <footer>
+    &copy; 2025 DSATM Student Portal | All rights reserved.
+  </footer>
+
+
+</body>
+</html>

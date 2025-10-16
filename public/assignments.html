@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assignments | Student Portal</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('images/img1.jpg');
+
+      background-size: cover;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    nav {
+      background-color: rgba(0, 0, 0, 0.85);
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      padding: 60px 20px;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 2;
+    }
+
+    nav.show {
+      transform: translateX(0);
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .page-heading {
+      background-color: #006994;
+      padding: 15px 0;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 1px 1px 4px #000;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .assignment-container {
+      max-width: 600px;
+      margin: 100px auto 30px auto;
+      background-color: white;
+      padding: 25px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 0;
+      margin-top: 100px;
+    }
+
+    .assignment-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .upload-block {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f7f9ff;
+      border-radius: 10px;
+    }
+
+    .upload-block h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .upload-block input[type="file"] {
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .upload-block button {
+      padding: 7px 15px;
+      background-color: #004aad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .upload-block button:hover {
+      background-color: #003b8a;
+    }
+
+    .uploaded-files {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .uploaded-files ul {
+      padding-left: 20px;
+    }
+
+    footer {
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: auto;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .assignment-container {
+        width: 90%;
+        margin-top: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hamburger Toggle Button -->
+  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+
+  <!-- Navigation Menu -->
+<nav id="nav-menu">
+  <a href="home.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable.html">Class Timetable</a>
+  <a href="exams.html">Exam Schedule</a>
+  <a href="leave.html">Leave Application</a>
+ 
+  <a href="grievance.html">Grievance</a>
+  
+  <a href="assignments.html">Assignments</a>
+  <a href="attendance.html">Attendance</a>
+</nav>
+
+
+  <!-- Page Heading -->
+  <div class="page-heading">🗂️ Assignment Uploads</div>
+
+  <!-- Assignment Uploads -->
+  <div class="assignment-container">
+    <h2>Semester-wise Assignment Upload</h2>
+
+    <!-- Repeat for each semester -->
+    <div class="upload-block">
+      <h3>📘 Semester 1</h3>
+      <input type="file" class="file-input">
+      <button onclick="handleUpload(this)">Upload</button>
+      <div class="uploaded-files"><strong>Uploaded:</strong><ul></ul></div>
+    </div>
+
+    <div class="upload-block">
+      <h3>📗 Semester 2</h3>
+      <input type="file" class="file-input">
+      <button onclick="handleUpload(this)">Upload</button>
+      <div class="uploaded-files"><strong>Uploaded:</strong><ul></ul></div>
+    </div>
+
+    <div class="upload-block">
+      <h3>📙 Semester 3</h3>
+      <input type="file" class="file-input">
+      <button onclick="handleUpload(this)">Upload</button>
+      <div class="uploaded-files"><strong>Uploaded:</strong><ul></ul></div>
+    </div>
+
+    <div class="upload-block">
+      <h3>📕 Semester 4</h3>
+      <input type="file" class="file-input">
+      <button onclick="handleUpload(this)">Upload</button>
+      <div class="uploaded-files"><strong>Uploaded:</strong><ul></ul></div>
+    </div>
+
+    <div class="upload-block">
+      <h3>📓 Semester 5</h3>
+      <input type="file" class="file-input">
+      <button onclick="handleUpload(this)">Upload</button>
+      <div class="uploaded-files"><strong>Uploaded:</strong><ul></ul></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 DSATM Student Portal. All rights reserved.
+  </footer>
+
+  <!-- Universal Menu Toggle Script -->
+  <script src="menu-toggle.js"></script>
+  
+  <!-- External JavaScript -->
+  <script src="assignments.js"></script>
+</body>
+</html>

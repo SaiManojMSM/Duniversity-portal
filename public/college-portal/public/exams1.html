@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Schedule - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Exam Schedule - Admin</h1>
+    </header>
+    <main>
+        <section id="exam-schedule">
+            <h2>Manage Exam Schedule</h2>
+            <form id="exam-form">
+                <label for="branch">Branch:</label>
+                <input type="text" id="branch" name="branch" required>
+                
+                <label for="semester">Semester:</label>
+                <input type="text" id="semester" name="semester" required>
+                
+                <label for="exams_json">Exams JSON:</label>
+                <textarea id="exams_json" name="exams_json" required></textarea>
+                
+                <button type="submit">Save Exam Schedule</button>
+            </form>
+            <div id="response-message"></div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

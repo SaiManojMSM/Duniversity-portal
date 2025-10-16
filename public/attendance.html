@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: url('images/img1.jpg');
+
+      background-size: cover;
+      color: #003f5c;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(to right, #007fa3, #006994);
+      color: white;
+      padding: 6px 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    header h1 {
+      margin: 6px 0 4px;
+      font-size: 20px;
+    }
+
+    header p {
+      margin: 0 0 6px;
+      font-size: 13px;
+    }
+
+    .menu-toggle {
+      position: absolute;
+      top: 8px;
+      right: 20px;
+      font-size: 20px;
+      background-color: #004f6e;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    nav#nav-menu {
+      position: absolute;
+      top: 55px;
+      right: 20px;
+      background-color: #e0f4fa;
+      display: none;
+      flex-direction: column;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+
+    nav#nav-menu.show {
+      display: flex;
+    }
+
+    nav#nav-menu a {
+      text-decoration: none;
+      color: #004f6e;
+      padding: 10px 15px;
+      background-color: #b3e0f2;
+      margin: 5px 0;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    nav#nav-menu a:hover {
+      background-color: #80c8e8;
+      transform: scale(1.05);
+    }
+
+    .container {
+      display: flex;
+      max-width: 850px;
+      margin: 20px auto;
+      background: #ffffffee;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 160px;
+      background: #b3e0f2;
+      padding: 15px;
+      border-right: 1px solid #ccc;
+    }
+
+    .sidebar button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      font-weight: bold;
+      background: #006994;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      font-size: 13px;
+    }
+
+    .sidebar button:hover,
+    .sidebar button.active {
+      background-color: #004f6e;
+    }
+
+    .main {
+      flex: 1;
+      padding: 15px;
+    }
+
+    .main h2 {
+      color: #006994;
+      margin-top: 0;
+    }
+
+    .date-selector {
+      float: right;
+      margin-bottom: 15px;
+    }
+
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #006994;
+      color: white;
+    }
+
+    .present {
+      background-color: #d4edda;
+      color: green;
+      font-weight: bold;
+    }
+
+    .absent {
+      background-color: #f8d7da;
+      color: red;
+      font-weight: bold;
+    }
+
+    .summary {
+      background-color: #e6f7fb;
+      border: 1px solid #ccc;
+      padding: 8px 15px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      color: #004f6e;
+      margin: 10px auto;
+      width: fit-content;
+    }
+
+    .semester-panel {
+      display: none;
+    }
+
+    .semester-panel.active {
+      display: block;
+    }
+
+    footer {
+      background-color: #003344;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 13px;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📆 Attendance Tracker</h1>
+    <p>View your daily attendance and semester summary.</p>
+    <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+  </header>
+
+    <!-- Navigation Menu -->
+<nav id="nav-menu">
+  <a href="home.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="timetable.html">Class Timetable</a>
+  <a href="exams.html">Exam Schedule</a>
+  <a href="leave.html">Leave Application</a>
+  
+  <a href="grievance.html">Grievance</a>
+ 
+  <a href="assignments.html">Assignments</a>
+  <a href="attendance.html">Attendance</a>
+</nav>
+
+  <div class="container">
+    <div class="sidebar">
+      <button class="semester-btn active" data-sem="sem1">Semester 1</button>
+      <button class="semester-btn" data-sem="sem2">Semester 2</button>
+      <button class="semester-btn" data-sem="sem3">Semester 3</button>
+      <button class="semester-btn" data-sem="sem4">Semester 4</button>
+      <button class="semester-btn" data-sem="sem5">Semester 5</button>
+    </div>
+
+    <div class="main">
+      <div class="date-selector">
+        <label for="att-date">Select Date:</label>
+        <input type="date" id="att-date" value="2023-01-02">
+      </div>
+
+      <div id="sem1" class="semester-panel active"><h2>Semester 1 Attendance</h2><div id="sem1-data"></div></div>
+      <div id="sem2" class="semester-panel"><h2>Semester 2 Attendance</h2><div id="sem2-data"></div></div>
+      <div id="sem3" class="semester-panel"><h2>Semester 3 Attendance</h2><div id="sem3-data"></div></div>
+      <div id="sem4" class="semester-panel"><h2>Semester 4 Attendance</h2><div id="sem4-data"></div></div>
+      <div id="sem5" class="semester-panel"><h2>Semester 5 Attendance</h2><div id="sem5-data"></div></div>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 DSATM Student Portal | All rights reserved.</footer>
+
+  <!-- Universal Menu Toggle Script -->
+  <script src="menu-toggle.js"></script>
+  
+  <!-- Page specific functionality -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Semester switching functionality
+      const buttons = document.querySelectorAll(".semester-btn");
+      const panels = document.querySelectorAll(".semester-panel");
+
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          buttons.forEach(b => b.classList.remove("active"));
+          panels.forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById(btn.getAttribute("data-sem")).classList.add("active");
+        });
+      });
+    });
+  </script>
+  
+  <script src="attendance.js"></script>
+</body>
+</html>

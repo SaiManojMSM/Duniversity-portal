@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: univ-portal-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: univ-portal-app
+  template:
+    metadata:
+      labels:
+        app: univ-portal-app
+    spec:
+      containers:
+      - name: univ-portal-app-app
+        image: saimanoj143/univ-app:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: univ-portal-app-service
+  namespace: default
+spec:
+  selector:
+    app: univ-portal-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 3000
+  type: LoadBalancer
+ 

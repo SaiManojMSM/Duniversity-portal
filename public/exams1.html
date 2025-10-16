@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Exam Editor | DSATM Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f0faff; color: #003f5c; }
+    .background { position: fixed; top:0; left:0; height:100%; width:100%; background-image:url('images/img1.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat; z-index:-1; }
+    header { background-color:#006994; color:white; padding:30px 20px; text-align:center; position:relative; }
+    header h1 { margin:0; font-size:30px; }
+    .menu-toggle { position:absolute; top:20px; right:20px; font-size:28px; background-color:#004f6e; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; z-index:1000; }
+    nav#nav-menu { position:absolute; top:80px; right:20px; background-color:#e0f4fa; display:none; flex-direction:column; border-radius:10px; padding:10px; box-shadow:0 2px 8px rgba(0,0,0,0.3); z-index:999; }
+    nav#nav-menu.show { display:flex; }
+    nav#nav-menu a { text-decoration:none; color:#004f6e; padding:10px 15px; background-color:#b3e0f2; margin:5px 0; border-radius:6px; font-weight:bold; text-align:center; transition:0.3s; }
+    nav#nav-menu a:hover { background-color:#80c8e8; transform:scale(1.05); }
+
+    .container { max-width:1100px; margin:30px auto; padding:20px; background-color:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    .controls { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .controls .left, .controls .right { display:flex; gap:10px; align-items:center; }
+    select, button { padding:8px 12px; border-radius:6px; border:1px solid #ccc; font-weight:600; background:white; cursor:pointer; }
+    button.primary { background-color:#006994; color:white; border:none; }
+    button.warn { background-color:#d9534f; color:white; border:none; }
+
+    .editor-table { width:100%; border-collapse:collapse; margin-top:10px; }
+    .editor-table th, .editor-table td { border:1px solid #ccc; padding:6px; text-align:center; }
+    .editor-table th { background-color:#006994; color:white; }
+    input.cell-input { width:100%; padding:6px 8px; box-sizing:border-box; border-radius:4px; border:1px solid #bbb; }
+
+    .note { color:#004f6e; font-weight:600; }
+    footer { background-color:#003344; color:white; text-align:center; padding:16px; font-size:14px; margin-top:30px; }
+    .small { font-size:13px; color:#333; }
+  </style>
+</head>
+<body>
+<div class="background"></div>
+
+<header>
+  <h1>📝 Admin Exam Schedule Editor</h1>
+  <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+</header>
+
+<nav id="nav-menu">
+  <a href="home1.html">Home</a>
+  <a href="main.html">Login</a>
+  <a href="exams1.html">Exam Editor</a>
+  <a href="timetable1.html">Timetable</a>
+  <a href="leavelogs.html">Leave Logs</a>
+  <a href="grievance1.html">Grievance1</a>
+</nav>
+
+<div class="container">
+  <div class="controls">
+    <div class="left">
+      <label class="small">Semester:</label>
+      <select id="semesterSelect">
+        <option value="sem1">Semester 1</option>
+        <option value="sem2">Semester 2</option>
+        <option value="sem3">Semester 3</option>
+        <option value="sem4">Semester 4</option>
+        <option value="sem5">Semester 5</option>
+      </select>
+
+      <label class="small">Branch:</label>
+      <select id="branchSelect">
+        <option value="">-- Choose branch --</option>
+        <option value="CS">CS</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="CIVIL">CIVIL</option>
+        <option value="AIML">AIML</option>
+        <option value="DataScience">Data Science</option>
+        <option value="EC">EC</option>
+        <option value="EEE">EEE</option>
+      </select>
+    </div>
+
+    <div class="right">
+      <button id="loadPublished" class="small">Load Published</button>
+      <button id="publish" class="primary small">Publish</button>
+      <button id="clearTable" class="warn small">Clear Table</button>
+    </div>
+  </div>
+
+  <div class="note">Edit exam schedule and click <strong>Publish</strong> to make it visible to students.</div>
+  <div id="editorWrapper"></div>
+</div>
+
+<footer>&copy; 2025 DSATM Student Portal | All rights reserved.</footer>
+
+<script>
+  // Build an empty template: header row + 10 blank rows
+  function createEmptyExamSkeleton() {
+    const skeleton = {};
+    ['sem1','sem2','sem3','sem4','sem5'].forEach(s => {
+      skeleton[s] = [['Date','Subject','Time','Room']];
+      for (let i=0; i<10; i++) skeleton[s].push(['','','','']);
+    });
+    return skeleton;
+  }
+
+  function renderEditor(semId, examObj) {
+    const wrapper = document.getElementById('editorWrapper');
+    wrapper.innerHTML = '';
+    const table = document.createElement('table');
+    table.className = 'editor-table';
+
+    const data = examObj?.[semId] ? JSON.parse(JSON.stringify(examObj[semId])) : createEmptyExamSkeleton()[semId];
+
+    data.forEach((rowArr, rIdx) => {
+      const tr = document.createElement('tr');
+      rowArr.forEach((cell, cIdx) => {
+        if (rIdx === 0) {
+          const th = document.createElement('th');
+          th.textContent = cell || ['Date','Subject','Time','Room'][cIdx] || `Col ${cIdx}`;
+          tr.appendChild(th);
+        } else {
+          const td = document.createElement('td');
+          const input = document.createElement('input');
+          input.className = 'cell-input';
+          input.value = cell || '';
+          td.appendChild(input);
+          tr.appendChild(td);
+        }
+      });
+      table.appendChild(tr);
+    });
+
+    wrapper.appendChild(table);
+  }
+
+  function collectEditorData() {
+    const sem = document.getElementById('semesterSelect').value;
+    const rows = Array.from(document.querySelector('.editor-table').rows);
+    const schedule = {};
+    schedule[sem] = rows.map((row, rIdx) => {
+      return Array.from(row.cells).map((cell) => {
+        if (rIdx === 0) return cell.textContent.trim();
+        const input = cell.querySelector('input');
+        return input ? input.value.trim() : '';
+      });
+    });
+    return schedule;
+  }
+
+  async function publish() {
+    const branch = document.getElementById('branchSelect').value;
+    const sem = document.getElementById('semesterSelect').value;
+    const examJson = collectEditorData();
+
+    if (!branch) {
+      alert('Please select a branch first.');
+      return;
+    }
+    if (!examJson[sem] || !Array.isArray(examJson[sem]) || examJson[sem].length < 2) {
+      alert('Please enter exam schedule data before publishing.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/save-exams', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          branch: branch,
+          semester: sem,
+          exams_json: examJson      // { semX: [ [header...], [row...], ... ] }
+        })
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && (data.success || data.message === 'ok')) {
+        alert(`✅ Exam schedule published successfully for ${branch} - ${sem.toUpperCase()}!`);
+      } else {
+        alert('❌ Failed to publish: ' + (data.error || data.message || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Error publishing exams:', err);
+      alert('❌ Error publishing exam schedule. Please check your connection.');
+    }
+  }
+
+  async function loadPublishedIntoEditor() {
+    const branch = document.getElementById('branchSelect').value;
+    const sem = document.getElementById('semesterSelect').value;
+
+    if (!branch) {
+      alert('Please select a branch first.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/get-exams/${branch}/${sem}`);
+      if (!res.ok) {
+        if (res.status === 404) throw new Error('No exam schedule found for this branch/semester');
+        throw new Error('Failed to load exam schedule');
+      }
+      const data = await res.json();
+
+      if (data && typeof data === 'object' && data[sem]) {
+        renderEditor(sem, data);
+        alert(`✅ Loaded existing exam schedule for ${branch} - ${sem.toUpperCase()}`);
+      } else {
+        throw new Error('No data found for this semester');
+      }
+    } catch (err) {
+      console.error('Error loading published exams:', err);
+      alert(`❌ No published exam schedule found for ${branch} - ${sem.toUpperCase()}. Starting with empty template.`);
+      renderEditor(sem, createEmptyExamSkeleton());
+    }
+  }
+
+  function clearTable() {
+    const sem = document.getElementById('semesterSelect').value;
+    if (confirm('Clear the current table (unsaved changes will be lost)?')) {
+      const blank = createEmptyExamSkeleton();
+      renderEditor(sem, blank);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // render empty table initially
+    renderEditor(document.getElementById('semesterSelect').value, createEmptyExamSkeleton());
+
+    // semester changes just swap the local editor view
+    document.getElementById('semesterSelect').addEventListener('change', () => {
+      renderEditor(document.getElementById('semesterSelect').value, createEmptyExamSkeleton());
+    });
+
+    // branch change: ask to load published (same behaviour as your timetable1.html)
+    document.getElementById('branchSelect').addEventListener('change', (e) => {
+      if (e.target.value && confirm('Load exam schedule for branch "' + e.target.value + '"?')) {
+        loadPublishedIntoEditor();
+      } else if (!e.target.value) {
+        // do nothing if user cleared it
+      } else {
+        // user cancelled
+        e.target.value = '';
+      }
+    });
+
+    document.getElementById('publish').addEventListener('click', publish);
+    document.getElementById('loadPublished').addEventListener('click', loadPublishedIntoEditor);
+    document.getElementById('clearTable').addEventListener('click', clearTable);
+  });
+</script>
+
+<!-- Universal Menu Toggle Script -->
+<script src="menu-toggle.js"></script>
+</body>
+</html>
