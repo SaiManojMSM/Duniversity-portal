@@ -63,67 +63,37 @@ pipeline {
       }
     }
  
-    stage('Deploy Container') {
-      steps {
-        script {
-            """
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: univ-frontend
-  labels:
-    app: univ-frontend
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: univ-frontend
-  template:
-    metadata:
-      labels:
-        app: univ-frontend
-    spec:
-      containers:
-      - name: univ-frontend
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html-content
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: html-content
-        hostPath:
-          path: /app/univ-portal/frontend
-          type: Directory
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: univ-frontend-service
-spec:
-  selector:
-    app: univ-frontend
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
-            docker rm -f ${params.CONTAINER_NAME} || true
-            docker run -d --name ${params.CONTAINER_NAME} -p ${params.HOST_PORT}:3000 ${DOCKER_HUB_REPO}:${params.IMAGE_TAG}
-          """
+    stage('deploy using kubernetes cluster') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials']]) {
+                script {
+                    sh "aws eks update-kubeconfig --name univ-app-cluster --region ap-southeast-3"
+                    sh "kubectl apply -f app-deployment.yaml"
+                    sh "kubectl apply -f sql-deployment.yaml"
+                }
+            }
         }
-      }
     }
+
+    stage('Deploy to Kubernetes') {
+    steps {
+    script {
+      sh """
+        kubectl apply -f app-deployment.yaml
+        kubectl apply -f sql-deployment.yaml
+      """
+    }
+  }
+}
+
   }
  
   post {
     success {
-      echo "✅ Deployment successful: ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} running as ${params.CONTAINER_NAME} on port ${params.HOST_PORT}"
+      echo "Deployment successful: ${DOCKER_HUB_REPO}:${params.IMAGE_TAG} running as ${params.CONTAINER_NAME} on port ${params.HOST_PORT}"
     }
     failure {
-      echo "❌ Deployment failed. Check logs for details."
+      echo "Deployment failed. Check logs for details."
     }
   }
 }
