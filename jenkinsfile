@@ -75,15 +75,7 @@ pipeline {
         }
     }
 
-    stage('Deploy to Kubernetes') {
-    steps {
-    script {
-      sh """
-        kubectl apply -f app-deployment.yaml
-        kubectl apply -f sql-deployment.yaml
-      """
-    }
-  }
+    
 }
 
   }
